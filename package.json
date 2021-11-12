@@ -8,16 +8,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lautarovaleiras/pvu-farm.git"
+    "url": "git+https://github.com/lautarovaleiras/pvu-notification.git"
   },
   "keywords": [],
   "type": "module",
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/lautarovaleiras/pvu-farm/issues"
+    "url": "https://github.com:lautarovaleiras/pvu-notification.git/issues"
   },
-  "homepage": "https://github.com/lautarovaleiras/pvu-farm#readme",
+  "homepage": "https://github.com/lautarovaleiras/pvu-notification#readme",
   "dependencies": {
     "dotenv": "^10.0.0",
     "node-cron": "^3.0.0",
