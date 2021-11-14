@@ -1,50 +1,27 @@
-import cron from 'node-cron';
-import request from 'request';
+import { Controller } from "./controllers/index.controller.js";
+import { TelegramService } from "./services/telegram.service.js";
 
 const main = () => {
-  if (typeof process.env.PVU_TOKEN === 'undefined') {
+
+  if (typeof process.env.PVU_TOKEN === 'undefined' ){
     console.warn('environment variable PVU_TOKEN needed, check .env.example');
     return;
   }
-  // https://crontab.guru/every-1-hour
-  cron.schedule('0 * * * *', () => {
-    request(
-      'https://backend-farm.plantvsundead.com/farms?limit=10&offset=0',
-      { json: true, headers: { Authorization: `Bearer Token: ${process.env.PVU_TOKEN}` } },
-      (err, res, body) => {
-        if (err) {
-          console.error(err);
-        }
-        // handle success
-        const { data, total } = body;
-        const canHarvest = [];
-        const needWater = [];
-        const hasCrow = [];
-        const hasSeed = [];
 
-        for (const farmingPlant of data) {
-          if (farmingPlant.totalHarvest > 0) {
-            canHarvest.push(farmingPlant.plantId);
-          }
-          if (farmingPlant.needWater) {
-            needWater.push(farmingPlant.plantId);
-          }
-          if (farmingPlant.hasCrow) {
-            hasCrow.push(farmingPlant.plantId);
-          }
-          if (farmingPlant.hasSeed) {
-            hasSeed.push(farmingPlant.plantId);
-          }
-        }
-        console.log({
-          canHarvest,
-          needWater,
-          hasCrow,
-          hasSeed,
-        });
-      }
-    );
-  });
+  if (typeof process.env.TELEGRAM_BOT_TOKEN === 'undefined') {
+    console.warn('environment variable TELEGRAM_BOT_TOKEN needed, check .env.example');
+    return;
+  }
+
+  if (typeof process.env.TELEGRAM_CHAT_ID === 'undefined') {
+    console.warn('environment variable TELEGRAM_CHAT_ID needed, check .env.example');
+    return;
+  }
+  
+  ///TelegramService.hears();
+  Controller.schedulePVUNotification();
+
+
 };
 
 main();
