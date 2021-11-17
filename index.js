@@ -1,5 +1,4 @@
 import { Controller } from "./controllers/index.controller.js";
-import { TelegramService } from "./services/telegram.service.js";
 
 const main = () => {
 
@@ -18,7 +17,7 @@ const main = () => {
     return;
   }
   
-  ///TelegramService.hears();
+  Controller.listenTelegram();
   Controller.schedulePVUNotification();
 
 

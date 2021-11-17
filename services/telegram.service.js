@@ -10,7 +10,7 @@ export class TelegramService {
         await bot.telegram.sendMessage(process.env.TELEGRAM_CHAT_ID, message);
     }
 
-    // get telegram chatId 
+    // walcome telegram message to get telegram chatId 
     static async getChatId(){   
         bot.command('start', ctx => {
             console.log(ctx.from)
@@ -20,8 +20,7 @@ export class TelegramService {
     }
 
     // bot hears
-    static async hears(message) {
-        let callback;
+    static async hears(plants) {
         console.log('listen telegram ....')
         bot.hears('farm', ctx => {
             console.log(ctx.from) 
@@ -50,26 +49,52 @@ export class TelegramService {
             })
         })
 
+        bot.action('harvest', ctx => { 
+            let plantsToHarvest = plants? plants.harvest : [];
+            if (plantsToHarvest.length === 0)
+                return bot.telegram.sendMessage(ctx.chat.id, 'no plants to harvest');
+
+            PvuService.harvestAll().then(() => {
+                bot.telegram.sendMessage(ctx.chat.id, 'all plants harvested');
+            }).catch(err => {
+                console.log(err);
+            });
+        });
+
         bot.action('water', ctx => { 
-            // TODO: get the plant id from first request    
-            PvuService.action(id, 3).then(res => {
-                console.log(res.status)
-                bot.telegram.sendMessage(ctx.chat.id, ` has been watered`)
-            }).catch(err => {
-                console.log(err)
-            })
+            let plantList = plants? plants.water : [];
+            if (plantList.length === 0)
+                return bot.telegram.sendMessage(ctx.chat.id, 'no plants to water');
 
-        })
+            let proms = [];
+            plantList.forEach(id => {
+                proms.push(PvuService.toolAction(id,3));
+            });
+            Promise.all(proms).then(() => {
+                bot.telegram.sendMessage(ctx.chat.id, ` has been watered`);
+            }).catch(err => {
+                console.log(err);
+            });
+        });
+
         bot.action('crow', ctx => { 
+            let plantList = plants? plants.crow : [];
 
-            PvuService.action(id, 4).then(res => {
-                console.log(res.status)
-                bot.telegram.sendMessage(ctx.chat.id, `${res.name} has been watered`)
+            if (plantList.length === 0)
+                return bot.telegram.sendMessage(ctx.chat.id, 'no crows to scare');
+
+            let proms = [];
+            plantList.forEach(id => {
+                proms.push(PvuService.toolAction(id,4));
+            });
+
+            Promise.all(proms).then(() => {
+                bot.telegram.sendMessage(ctx.chat.id, ` crows has been scared`)
             }).catch(err => {
                 console.log(err)
-            })
+            });
+        });
 
-        })
         bot.launch({});
     }
 

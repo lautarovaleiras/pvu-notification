@@ -1,9 +1,9 @@
 import cron from 'node-cron';
-import request from 'request';
 import { PvuService } from '../services/pvu.service.js';
 import { TelegramService } from '../services/telegram.service.js';
 
 export class Controller {
+  static cache = null;
   /**
    *  Check if pvu has action to do
    *  if not, do nothing
@@ -24,16 +24,16 @@ export class Controller {
 
         for (const farmingPlant of data) {
           if (farmingPlant.totalHarvest > 0) {
-            canHarvest.push(farmingPlant.plantId);
+            canHarvest.push(farmingPlant._id);
           }
           if (farmingPlant.needWater) {
-            needWater.push(farmingPlant.plantId);
+            needWater.push(farmingPlant._id);
           }
           if (farmingPlant.hasCrow) {
-            hasCrow.push(farmingPlant.plantId);
+            hasCrow.push(farmingPlant._id);
           }
           if (farmingPlant.hasSeed) {
-            hasSeed.push(farmingPlant.plantId);
+            hasSeed.push(farmingPlant._id);
           }
         }
         console.log({
@@ -42,6 +42,11 @@ export class Controller {
           hasCrow,
           hasSeed,
         });
+        this.cache = {
+          harvest: canHarvest,
+          water: needWater, 
+          crow: hasCrow
+        }
 
         /** Send message to telegram */
         try {
@@ -66,5 +71,9 @@ export class Controller {
       });
 
     });
+  }
+
+  static async listenTelegram() {
+    TelegramService.hears(this.cache);
   }
 }

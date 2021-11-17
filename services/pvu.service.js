@@ -26,16 +26,16 @@ export class PvuService {
         return response;
     }
     /**
-     * 
-     * @param {id} 
+     * Method to water a plant or scare a crow
+     * @param {id} id
      * @param {action} 3 water, 4 crow
      * @returns 
      */
-    static async action(id, action){
+    static async toolAction(id, action){
         let body = {
             farmId: id,
             token: {challenge: "default", seccode: "default", validate: "default"},
-            toolId: action // water
+            toolId: action // water:3 || crow:4
         }
 
         let post = util.promisify(request.post)
